@@ -46,7 +46,6 @@ namespace UpdateFolderLastModifiedAndCreated
                         string[] split = args[i].Substring(1).Split('=');
                         if (split[0] == "ini") ProcessIni(split[1]);
                         if (split[0] == "created") updateCreate = split[1] == "true";
-                        if (split[0] == "created") updateCreate = split[1] == "true";
                         if (split[0] == "modified") updateModify = split[1] == "true";
                         if (split[0] == "verbose") verbose = true;
                         if (split[0] == "quiet") quiet = true;
@@ -71,7 +70,13 @@ namespace UpdateFolderLastModifiedAndCreated
             }
 
             if (!quiet)
-                Console.WriteLine("Updating created and modified timestamps for \"" + path + "\" and the directories therein.");
+                if(updateCreate && updateModify)
+                    Console.WriteLine("Updating created and modified timestamps for \"" + path + "\" and the directories therein.");
+                else if (updateCreate)
+                    Console.WriteLine("Updating created timestamps for \"" + path + "\" and the directories therein.");
+                else
+                    Console.WriteLine("Updating created and modified timestamps for \"" + path + "\" and the directories therein.");
+
             DateTime creation = DateTime.MaxValue;
             DateTime modification = DateTime.MinValue;
             ParseDirectory(path, ref creation, ref modification);
