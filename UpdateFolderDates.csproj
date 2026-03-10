@@ -7,8 +7,8 @@
     <ProjectGuid>{F5F3F015-4303-451F-AFF3-344DF2B9A8BC}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UpdateFolderLastModifiedAndCreated</RootNamespace>
-    <AssemblyName>UpdateFolderLastModifiedAndCreated</AssemblyName>
+    <RootNamespace>UpdateFolderDates</RootNamespace>
+    <AssemblyName>UpdateFolderDates</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -31,9 +31,17 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <PreferNativeArm64>false</PreferNativeArm64>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Treetog-Junior-Folder-clock.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -50,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Key.snk" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Treetog-Junior-Folder-clock.ico" />
