@@ -103,6 +103,7 @@ namespace UpdateFolderDates
             if (args.Length == 0)
             {
                 PrintUsage();
+                Console.ReadKey();
                 return;
             }
 
@@ -171,45 +172,59 @@ namespace UpdateFolderDates
 
             if (!updateCreate && !updateModify)
             {
-                if (!quiet)
+                if (!quit && !quiet)
+                {
+                    Console.WriteLine("");
                     Console.WriteLine("Nothing to do, neiter updating creation time or modified time is selected.");
+                    Console.ReadKey();
+                }
                 quit = true;
             }
 
-            if (!quit)
-                foreach (string path in paths)
+            if (quit)
+            {
+                if (!quiet)
                 {
-                    try
-                    {
-                        string tmp = Path.GetFullPath(path);
-                        if (!Directory.Exists(tmp))
-                        {
-                            if (!quiet)
-                                Console.WriteLine("Directory does not exist: " + path);
-                            continue;
-                        }
-                    }
-                    catch
+                    Console.WriteLine("");
+                    Console.WriteLine("Press any key to continue...");
+                }
+                Console.ReadKey();
+                return;
+            }
+
+            foreach (string path in paths)
+            {
+                try
+                {
+                    string tmp = Path.GetFullPath(path);
+                    if (!Directory.Exists(tmp))
                     {
                         if (!quiet)
-                            Console.WriteLine("Invalid directory: " + path);
+                            Console.WriteLine("Directory does not exist: " + path);
                         continue;
                     }
-
-                    if (!quiet)
-                    {
-                        Console.WriteLine("");
-                        if (updateCreate && updateModify)
-                            Console.WriteLine($"Updating created and modified timestamps for '{path}' and the directories therein.");
-                        else if (updateCreate)
-                            Console.WriteLine($"Updating created timestamps for '{path}' and the directories therein.");
-                        else
-                            Console.WriteLine($"Updating created and modified timestamps for '{path}' and the directories therein.");
-                    }
-                    DateTime creation = DateTime.MaxValue;
-                    DateTime modification = DateTime.MinValue;
-                    ParseDirectory(path, ref creation, ref modification);
                 }
+                catch
+                {
+                    if (!quiet)
+                        Console.WriteLine("Invalid directory: " + path);
+                    continue;
+                }
+
+                if (!quiet)
+                {
+                    Console.WriteLine("");
+                    if (updateCreate && updateModify)
+                        Console.WriteLine($"Updating created and modified timestamps for '{path}' and the directories therein.");
+                    else if (updateCreate)
+                        Console.WriteLine($"Updating created timestamps for '{path}' and the directories therein.");
+                    else
+                        Console.WriteLine($"Updating created and modified timestamps for '{path}' and the directories therein.");
+                }
+                DateTime creation = DateTime.MaxValue;
+                DateTime modification = DateTime.MinValue;
+                ParseDirectory(path, ref creation, ref modification);
+            }
 
             if (!quiet)
             {
@@ -281,8 +296,13 @@ namespace UpdateFolderDates
 
             if (!string.IsNullOrEmpty(file))
             {
-                try { File.WriteAllLines(file, lines); return; }
-                catch { Console.WriteLine("Can not write INI-file."); return; }
+                try 
+                {
+                    File.WriteAllLines(file, lines);
+                    Console.WriteLine($"Configuration file {file} saved.");
+                    return; 
+                }
+                catch { Console.WriteLine($"Can not write configuration file:{file} "); return; }
             }
 
             string exe = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
@@ -290,14 +310,23 @@ namespace UpdateFolderDates
             string dir = Path.GetDirectoryName(ini);
             file = Path.Combine(dir, ini);
 
-            try { File.WriteAllLines(file, lines); return; } 
+            try 
+            {
+                File.WriteAllLines(file, lines);
+                Console.WriteLine($"Configuration file {file} saved.");
+                return; 
+            } 
             catch { } 
             
             dir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             file = Path.Combine(dir, "Locivir", ini);
             
-            try { File.WriteAllLines(file, lines); return; }
-            catch { Console.WriteLine("Can not write INI-file."); return; }
+            try { 
+                File.WriteAllLines(file, lines);
+                Console.WriteLine($"Configuration file {file} saved.");
+                return; 
+            }
+            catch { Console.WriteLine($"Can not write configuration file:{file} "); return; }
         }
 
         static void GetIni()
