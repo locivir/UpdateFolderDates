@@ -270,7 +270,7 @@ namespace UpdateFolderDates
             lines.Add("# Update created timestamp: true|false. Default is 'false', no value is 'true'.");
             lines.Add($"/created={updateCreate.ToString().ToLower()}");
             lines.Add("# Update modified timestamp: true|false. Default is 'true', no value is 'true'.");
-            lines.Add($"/modified={updateCreate.ToString().ToLower()}");
+            lines.Add($"/modified={updateModify.ToString().ToLower()}");
             lines.Add("# Verbose output: true|false. Default is 'false', no value is 'true'.");
             lines.Add($"/verbose={verbose.ToString().ToLower()}");
             lines.Add("# Suppress output: true|false. Default is 'false', no value is 'true'.");
