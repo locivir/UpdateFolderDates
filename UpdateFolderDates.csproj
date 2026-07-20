@@ -37,11 +37,29 @@
   <PropertyGroup>
     <ApplicationIcon>Treetog-Junior-Folder-clock.ico</ApplicationIcon>
   </PropertyGroup>
+  <!--
+    Strong-name signing configuration.
+      StrongNameKeyPath      : overridable path to the .snk. Defaults to the project-root Key.snk
+                               (a well-known MSBuild variable, not a machine-specific absolute path).
+                               A secure CI/production build can inject a key from outside source control
+                               by passing /p:StrongNameKeyPath=<path>.
+      RequireStrongNameSigning: when true, signing is mandatory and the build fails if the key is missing.
+    Behavior:
+      - key present            -> build signed automatically.
+      - key absent, not required -> build succeeds UNSIGNED (developer fallback) with a clear warning.
+      - key absent, required   -> build fails clearly.
+    Key.snk is private and must stay out of source control (see .gitignore).
+  -->
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+    <StrongNameKeyPath Condition=" '$(StrongNameKeyPath)' == '' ">$(MSBuildProjectDirectory)\Key.snk</StrongNameKeyPath>
+    <RequireStrongNameSigning Condition=" '$(RequireStrongNameSigning)' == '' ">false</RequireStrongNameSigning>
   </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
+  <PropertyGroup Condition="Exists('$(StrongNameKeyPath)')">
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(StrongNameKeyPath)</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="!Exists('$(StrongNameKeyPath)')">
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -58,12 +76,21 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Key.snk" />
+    <None Include="$(StrongNameKeyPath)" Condition="Exists('$(StrongNameKeyPath)')" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Treetog-Junior-Folder-clock.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- Surfaces the signing decision and enforces RequireStrongNameSigning. Never prints key contents. -->
+  <Target Name="ValidateStrongNameSigning" BeforeTargets="Build">
+    <Error Condition="'$(RequireStrongNameSigning)' == 'true' and !Exists('$(StrongNameKeyPath)')"
+           Text="RequireStrongNameSigning=true but no strong-name key was found at '$(StrongNameKeyPath)'. Supply the key via /p:StrongNameKeyPath=&lt;path&gt; or set RequireStrongNameSigning=false." />
+    <Warning Condition="'$(RequireStrongNameSigning)' != 'true' and !Exists('$(StrongNameKeyPath)')"
+             Text="Strong-name key not found at '$(StrongNameKeyPath)'. Building UNSIGNED developer fallback. Supply a key via /p:StrongNameKeyPath=&lt;path&gt; for a signed build." />
+    <Message Condition="Exists('$(StrongNameKeyPath)')" Importance="high"
+             Text="Strong-name signing enabled using key at '$(StrongNameKeyPath)'." />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

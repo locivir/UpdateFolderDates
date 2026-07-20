@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("UpdateFolderDates")]
-[assembly: AssemblyDescription("Update folder creation and/or modification date to reflect the latest date of the entries within.")]
+[assembly: AssemblyDescription("Sets each directory's creation time to the earliest, and its modified time to the latest, timestamp derived from the files within its subtree (a pre-1980 creation time falls back to the file's last-write time, which also counts toward the earliest-creation calculation).")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Locivir")]
 [assembly: AssemblyProduct("UpdateFolderDates")]
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.2.0")]
-[assembly: AssemblyFileVersion("1.0.2.0")]
+[assembly: AssemblyVersion("1.1.2.0")]
+[assembly: AssemblyFileVersion("1.1.2.0")]
